@@ -1,7 +1,16 @@
 {
   "name": "okcert",
-  "version": "0.0.1",
-  "description": "",
+  "version": "0.0.2",
+  "description": "KCB 휴대폰 본인확인 서비스 OKCert3 NodeJS 모듈",
+  "author": {
+    "name": "Lee Seungmin",
+    "email": "lee@seungmin.io"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seungminio/okcert.git",
+    "baseUrl": "https://github.com/seungminio/okcert"
+  },
   "main": "dist/main.js",
   "scripts": {
     "start": "node ./dist/main.js",
@@ -13,7 +22,6 @@
   "packageManager": "yarn@3.4.1",
   "devDependencies": {
     "@types/node": "^18.15.2",
-    "glob": "^9.2.1",
     "typescript": "^4.9.5"
   }
 }

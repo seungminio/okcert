@@ -29,7 +29,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./",\
           "packageDependencies": [\
             ["@types/node", "npm:18.15.2"],\
-            ["glob", "npm:9.2.1"],\
             ["java-bridge", "npm:2.2.3-beta.3"],\
             ["typescript", "patch:typescript@npm%3A4.9.5#~builtin<compat/typescript>::version=4.9.5&hash=23ec76"]\
           ],\
@@ -248,17 +247,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["once", "npm:1.4.0"]\
           ],\
           "linkType": "HARD"\
-        }],\
-        ["npm:9.2.1", {\
-          "packageLocation": "./.yarn/cache/glob-npm-9.2.1-2a4c4d66e0-ef9b1c3249.zip/node_modules/glob/",\
-          "packageDependencies": [\
-            ["glob", "npm:9.2.1"],\
-            ["fs.realpath", "npm:1.0.0"],\
-            ["minimatch", "npm:7.4.2"],\
-            ["minipass", "npm:4.2.5"],\
-            ["path-scurry", "npm:1.6.1"]\
-          ],\
-          "linkType": "HARD"\
         }]\
       ]],\
       ["ieee754", [\
@@ -402,15 +390,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
-      ["lru-cache", [\
-        ["npm:7.18.3", {\
-          "packageLocation": "./.yarn/cache/lru-cache-npm-7.18.3-e68be5b11c-e550d77238.zip/node_modules/lru-cache/",\
-          "packageDependencies": [\
-            ["lru-cache", "npm:7.18.3"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
       ["mimic-fn", [\
         ["npm:2.1.0", {\
           "packageLocation": "./.yarn/cache/mimic-fn-npm-2.1.0-4fbeb3abb4-d2421a3444.zip/node_modules/mimic-fn/",\
@@ -428,23 +407,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["brace-expansion", "npm:2.0.1"]\
           ],\
           "linkType": "HARD"\
-        }],\
-        ["npm:7.4.2", {\
-          "packageLocation": "./.yarn/cache/minimatch-npm-7.4.2-da654284bf-9e341b04e6.zip/node_modules/minimatch/",\
-          "packageDependencies": [\
-            ["minimatch", "npm:7.4.2"],\
-            ["brace-expansion", "npm:2.0.1"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
-      ["minipass", [\
-        ["npm:4.2.5", {\
-          "packageLocation": "./.yarn/cache/minipass-npm-4.2.5-25860eb433-4f9c19af23.zip/node_modules/minipass/",\
-          "packageDependencies": [\
-            ["minipass", "npm:4.2.5"]\
-          ],\
-          "linkType": "HARD"\
         }]\
       ]],\
       ["okcert", [\
@@ -453,7 +415,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["okcert", "workspace:."],\
             ["@types/node", "npm:18.15.2"],\
-            ["glob", "npm:9.2.1"],\
             ["java-bridge", "npm:2.2.3-beta.3"],\
             ["typescript", "patch:typescript@npm%3A4.9.5#~builtin<compat/typescript>::version=4.9.5&hash=23ec76"]\
           ],\
@@ -494,17 +455,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["log-symbols", "npm:5.1.0"],\
             ["strip-ansi", "npm:7.0.1"],\
             ["wcwidth", "npm:1.0.1"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
-      ["path-scurry", [\
-        ["npm:1.6.1", {\
-          "packageLocation": "./.yarn/cache/path-scurry-npm-1.6.1-b7f913ddad-7ba57e823c.zip/node_modules/path-scurry/",\
-          "packageDependencies": [\
-            ["path-scurry", "npm:1.6.1"],\
-            ["lru-cache", "npm:7.18.3"],\
-            ["minipass", "npm:4.2.5"]\
           ],\
           "linkType": "HARD"\
         }]\
