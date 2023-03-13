@@ -1,0 +1,16 @@
+dist/
+
+.yarn/*
+!.yarn/cache
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+.vscode/*
+
+.DS_Store
+
+src/license/*
+src/modules/*
