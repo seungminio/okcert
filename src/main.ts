@@ -153,4 +153,31 @@ export default class OKCert {
 
     return result;
   };
+
+  public confirmPhoneAuth = async (body: { tx_seq_no: string; tel_no: string; otp_no: string }) => {
+    const OkCertClass = await this.getOKCertInstance();
+    const OKCert = new OkCertClass();
+
+    const SERVICE_NAME = 'IDS_HS_EMBED_SMS_CIDI';
+
+    const request_body = {
+      TX_SEQ_NO: body.tx_seq_no,
+      TEL_NO: body.tel_no,
+      OTP_NO: body.otp_no,
+    };
+
+    const data = await OKCert.callOkCert(
+      this.target,
+      this.cp_cd,
+      SERVICE_NAME,
+      this.license,
+      JSON.stringify(request_body),
+    );
+
+    if (!data) throw Error('@okcert3 :: callOkCert 값 오류');
+
+    const result = JSON.parse(data);
+
+    return result;
+  };
 }
