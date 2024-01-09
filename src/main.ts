@@ -74,6 +74,10 @@ interface IRequestPhoneAuth {
    * 앱해쉬 문자열 (Google SMS Retriever API 사용 시)
    */
   app_hash_str?: string;
+  /**
+   * 사이트명. 미입력시 인스턴스 생성시 입력한 사이트명이 사용됨.
+   */
+  site_name?: string;
 }
 
 export default class OKCert {
@@ -112,7 +116,7 @@ export default class OKCert {
       TEL_NO: body.tel_no,
       USER_IP: body.user_ip,
       SITE_URL: this.site_url,
-      SITE_NAME: this.site_name,
+      SITE_NAME: body.site_name || this.site_name,
       RQST_CAUS_CD: body.rqst_caus_cd,
       CHNL_CD: '0000', // 고정
       APP_HASH_STR: body.app_hash_str,
