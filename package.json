@@ -1,6 +1,6 @@
 {
   "name": "okcert",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "KCB 휴대폰 본인확인 서비스 OKCert3 NodeJS 모듈",
   "author": {
     "name": "Lee Seungmin",
