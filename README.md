@@ -25,6 +25,14 @@ $ yarn add okcert
 
 `okcert`는 [`yarn berry (PnP - Plug'n'Play)`](https://github.com/yarnpkg/berry)를 지원하고 있습니다.
 
+**Java 모드**를 사용하는 경우 `java-bridge` 를 함께 설치해야 합니다. (optional peer dependency, JDK 필요)
+
+```
+$ npm install java-bridge
+```
+
+API 모드만 사용하는 경우 `java-bridge` 와 JDK 가 필요하지 않습니다.
+
 ## 설정하기
 
 생성자 옵션에 따라 모드가 결정됩니다.

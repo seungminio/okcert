@@ -256,3 +256,26 @@ export interface IAccessToken {
   /** 모듈이 계산한 만료 시각 (epoch ms) */
   expires_at: number;
 }
+
+/**
+ * [Java 전용] `kcb.module.v3.OkCert` 의 최소 타입. `java-bridge` 타입에 의존하지 않도록 모듈에서 직접 정의합니다.
+ */
+export interface IOkCertJavaInstance {
+  /**
+   * @returns Java 모듈의 JSON 문자열 응답
+   */
+  callOkCert(
+    target: string,
+    cp_cd: string,
+    service: string,
+    license: string,
+    body: string,
+  ): Promise<string | null>;
+  callOkCertSync(target: string, cp_cd: string, service: string, license: string, body: string): string | null;
+  [method: string]: any;
+}
+
+export interface IOkCertJavaClass {
+  new (): IOkCertJavaInstance;
+  [member: string]: any;
+}

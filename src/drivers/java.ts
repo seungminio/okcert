@@ -1,5 +1,4 @@
-import type { OkCertClass as OkCertType } from '../bridge/kcb/module/v3/OkCert';
-import { IConfirmPhoneAuth, IOkCertJavaOptions, IRequestPhoneAuth } from '../types';
+import { IConfirmPhoneAuth, IOkCertJavaClass, IOkCertJavaOptions, IRequestPhoneAuth } from '../types';
 import assign from '../utils/assign';
 
 type JavaBridge = typeof import('java-bridge');
@@ -36,9 +35,9 @@ export default class JavaDriver {
     this.site_name = options.site_name;
   }
 
-  public getOKCertInstance = async () => {
-    const OkCertClass = await this.bridge.importClassAsync<typeof OkCertType>('kcb.module.v3.OkCert');
-    return OkCertClass;
+  public getOKCertInstance = async (): Promise<IOkCertJavaClass> => {
+    const OkCertClass = await this.bridge.importClassAsync('kcb.module.v3.OkCert');
+    return OkCertClass as unknown as IOkCertJavaClass;
   };
 
   private call = async (service: string, body: Record<string, unknown>) => {
