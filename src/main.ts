@@ -1,187 +1,92 @@
-import { appendClasspath, importClassAsync } from 'java-bridge';
-import { OkCertClass as OkCertType } from './bridge/kcb/module/v3/OkCert';
-import assign from './utils/assign';
+import ApiDriver from './drivers/api';
+import JavaDriver from './drivers/java';
+import {
+  IApiConfirmResponse,
+  IApiResponse,
+  IConfirmPhoneAuth,
+  IOkCert,
+  IOkCertApiOptions,
+  IRequestPhoneAuth,
+  IResendPhoneAuth,
+} from './types';
 
-interface IOkCert {
-  /**
-   * 타겟 : 운영/테스트 전환시 변경 필요 (테스트="TEST", 운영="PROD")
-   */
-  target: 'PROD' | 'TEST';
-  /**
-   * 라이센스 파일
-   */
-  license: string;
-  /**
-   * 모듈 파일
-   */
-  module: string;
-  /**
-   * 회원사코드
-   */
-  cp_cd: string;
-  /**
-   * 회원사 사이트 URL
-   */
-  site_url: string;
-  /**
-   * 사이트명, SMS인증번호문자에 표시됨
-   */
-  site_name: string;
-}
+export * from './types';
+export { OKCertApiError, BASE_URLS, PATHS } from './drivers/api';
+export { ALGORITHMS, encrypt, decrypt } from './utils/crypto';
+export { generateTranId, generateTxSeqNo } from './utils/id';
 
-interface IRequestPhoneAuth {
-  /**
-   * 사용자IP
-   */
-  user_ip?: string;
-  /**
-   * 성명
-   */
-  name: string;
-  /**
-   * 생년월일
-   */
-  birthday: string;
-  /**
-   * 성별 (남:M, 여:F)
-   */
-  sex_cd: 'M' | 'F';
-  /**
-   * 내외국인구분 (내국인:F, 외국인:L)
-   */
-  ntv_frnr_cd: 'L' | 'F';
-  /**
-   * 통신사코드(01:SKT, 02:KT, 03:LGU+, 04:SKT알뜰폰, 05:KT알뜰폰, 06:LGU+알뜰폰)
-   */
-  tel_com_cd: string;
-  /**
-   * 휴대폰번호
-   */
-  tel_no: string;
-  /**
-   * 인증요청사유코드 (00:회원가입, 01:성인인증, 02:회원정보수정, 03:비밀번호찾기, 04:상품구매, 99:기타)
-   */
-  rqst_caus_cd: '00' | '01' | '02' | '03' | '04' | '99';
-  /**
-   * 재전송여부
-   */
-  sms_resend_yn?: string;
-  /**
-   * 거래고유번호. 동일문자열을 두번 사용할 수 없음.
-   */
-  tx_seq_no?: string;
-  /**
-   * 앱해쉬 문자열 (Google SMS Retriever API 사용 시)
-   */
-  app_hash_str?: string;
-  /**
-   * 사이트명. 미입력시 인스턴스 생성시 입력한 사이트명이 사용됨.
-   */
-  site_name?: string;
-}
+export type OKCertMode = 'java' | 'api';
+
+const isApiOptions = (options: IOkCert): options is IOkCertApiOptions => 'client_id' in options;
 
 export default class OKCert {
-  private target: string = 'PROD';
-  private license: string = '';
-  private cp_cd: string = '';
-  private site_url: string = '';
-  private site_name: string = '';
+  /**
+   * 연동 방식. `module`/`license` 옵션이면 `java`, `client_id`/`client_secret` 옵션이면 `api`.
+   */
+  public readonly mode: OKCertMode;
+  private readonly driver: JavaDriver | ApiDriver;
 
   constructor(options: IOkCert) {
-    appendClasspath(options.module);
-    this.target = options.target;
-    this.license = options.license;
-    this.cp_cd = options.cp_cd;
-    this.site_url = options.site_url;
-    this.site_name = options.site_name;
+    if (isApiOptions(options)) {
+      this.mode = 'api';
+      this.driver = new ApiDriver(options);
+    } else {
+      this.mode = 'java';
+      this.driver = new JavaDriver(options);
+    }
   }
 
-  public getOKCertInstance = async () => {
-    const OkCertClass = await importClassAsync<typeof OkCertType>('kcb.module.v3.OkCert');
-    return OkCertClass;
-  };
+  private get java(): JavaDriver {
+    if (!(this.driver instanceof JavaDriver)) throw new Error('@okcert :: Java 모드에서만 사용할 수 있습니다.');
+    return this.driver;
+  }
 
-  public requestPhoneAuth = async (body: IRequestPhoneAuth) => {
-    const OkCertClass = await this.getOKCertInstance();
-    const OKCert = new OkCertClass();
+  private get api(): ApiDriver {
+    if (!(this.driver instanceof ApiDriver)) throw new Error('@okcert :: API 모드에서만 사용할 수 있습니다.');
+    return this.driver;
+  }
 
-    const SERVICE_NAME = 'IDS_HS_EMBED_SMS_REQ';
+  /**
+   * [Java 전용] `kcb.module.v3.OkCert` 클래스를 반환합니다.
+   */
+  public getOKCertInstance = () => this.java.getOKCertInstance();
 
-    const request_body = {
-      NAME: body.name,
-      BIRTHDAY: body.birthday,
-      SEX_CD: body.sex_cd,
-      NTV_FRNR_CD: body.ntv_frnr_cd,
-      TEL_COM_CD: body.tel_com_cd,
-      TEL_NO: body.tel_no,
-      USER_IP: body.user_ip,
-      SITE_URL: this.site_url,
-      SITE_NAME: body.site_name || this.site_name,
-      RQST_CAUS_CD: body.rqst_caus_cd,
-      CHNL_CD: '0000', // 고정
-      APP_HASH_STR: body.app_hash_str,
-      SMS_RESEND_YN: body.sms_resend_yn,
-      TX_SEQ_NO: body.tx_seq_no,
-      // 약관 고정
-      AGREE1: 'Y',
-      AGREE2: 'Y',
-      AGREE3: 'Y',
-      AGREE4: 'Y',
-    };
+  /**
+   * [API 전용] 접근토큰을 반환합니다. (캐시 / 자동 재발급)
+   */
+  public getAccessToken = (force = false) => this.api.getAccessToken(force);
 
-    const assigned_body = assign(
-      {
-        NAME: 'x',
-        BIRTHDAY: 'x',
-        SEX_CD: 'x',
-        NTV_FRNR_CD: 'x',
-        TEL_COM_CD: 'x',
-        RQST_CAUS_CD: '99',
-        SMS_RESEND_YN: 'N',
-        APP_HASH_STR: '',
-      },
-      request_body,
-    );
+  /**
+   * [API 전용] 캐시된 접근토큰을 폐기합니다.
+   */
+  public invalidateToken = () => this.api.invalidateToken();
 
-    const data = await OKCert.callOkCert(
-      this.target,
-      this.cp_cd,
-      SERVICE_NAME,
-      this.license,
-      JSON.stringify(assigned_body),
-    );
+  /**
+   * 휴대폰 본인확인 거래요청 (통신사 명의 확인 후 OTP 발송)
+   *
+   * - Java 모드 : `IDS_HS_EMBED_SMS_REQ` 응답(JSON) 을 그대로 반환합니다.
+   * - API 모드 : `/v1/id/phone/embed-sms-req` 응답을 반환합니다. (`rsp_cd`, `rsp_msg`, `rqst_svc_tx_seqno`)
+   */
+  public requestPhoneAuth = (body: IRequestPhoneAuth): Promise<any | IApiResponse> =>
+    this.driver.requestPhoneAuth(body);
 
-    if (!data) throw Error('@okcert3 :: callOkCert 값 오류');
+  /**
+   * OTP 재전송. 최초 거래요청과 동일한 `tx_seq_no`, `tel_no` 를 사용합니다.
+   *
+   * - Java 모드 : `SMS_RESEND_YN=Y` 로 거래요청을 다시 호출합니다. (나머지 항목도 최초 요청과 동일하게 전달)
+   * - API 모드 : `/v1/id/phone/embed-sms-resend` 를 호출합니다.
+   */
+  public resendPhoneAuth = (body: IResendPhoneAuth): Promise<any | IApiResponse> =>
+    this.driver instanceof ApiDriver
+      ? this.driver.resendPhoneAuth(body)
+      : this.driver.requestPhoneAuth({ ...body, sms_resend_yn: 'Y' });
 
-    const result = JSON.parse(data);
-
-    return result;
-  };
-
-  public confirmPhoneAuth = async (body: { tx_seq_no: string; tel_no: string; otp_no: string }) => {
-    const OkCertClass = await this.getOKCertInstance();
-    const OKCert = new OkCertClass();
-
-    const SERVICE_NAME = 'IDS_HS_EMBED_SMS_CIDI';
-
-    const request_body = {
-      TX_SEQ_NO: body.tx_seq_no,
-      TEL_NO: body.tel_no,
-      OTP_NO: body.otp_no,
-    };
-
-    const data = await OKCert.callOkCert(
-      this.target,
-      this.cp_cd,
-      SERVICE_NAME,
-      this.license,
-      JSON.stringify(request_body),
-    );
-
-    if (!data) throw Error('@okcert3 :: callOkCert 값 오류');
-
-    const result = JSON.parse(data);
-
-    return result;
-  };
+  /**
+   * OTP 인증번호 확인 및 본인확인 결과 조회
+   *
+   * - Java 모드 : `IDS_HS_EMBED_SMS_CIDI` 응답(JSON) 을 그대로 반환합니다.
+   * - API 모드 : `/v1/id/phone/embed-sms-cidi` 응답을 반환하며, [암호화] 항목은 복호화된 평문입니다.
+   */
+  public confirmPhoneAuth = (body: IConfirmPhoneAuth): Promise<any | IApiConfirmResponse> =>
+    this.driver.confirmPhoneAuth(body);
 }

@@ -1,7 +1,7 @@
 {
   "name": "okcert",
-  "version": "0.0.7",
-  "description": "KCB 휴대폰 본인확인 서비스 OKCert3 NodeJS 모듈",
+  "version": "0.1.0",
+  "description": "KCB 휴대폰 본인확인 서비스 OKCert3 NodeJS 모듈 (Java 모듈 / REST API 연동)",
   "author": {
     "name": "Lee Seungmin",
     "email": "lee@seungmin.io"
@@ -17,6 +17,7 @@
     "build": "tsc"
   },
   "dependencies": {
+    "iconv-lite": "^0.6.3",
     "java-bridge": "^2.2.3-beta.3"
   },
   "packageManager": "yarn@3.4.1",
